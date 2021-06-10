@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  users_service_db:
+    container_name: 'users_service_db'
+    image: postgres:13.1-alpine
+    ports:
+      - '${USERS_SERVICE_DB_PORT}:${USERS_SERVICE_DB_PORT}'
+    environment:
+      - POSTGRES_USER=${USERS_SERVICE_DB_USERNAME}
+      - POSTGRES_PASSWORD=${USERS_SERVICE_DB_PASSWORD}
+      - POSTGRES_DB=${USERS_SERVICE_DB_NAME}
