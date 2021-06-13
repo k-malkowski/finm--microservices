@@ -1,8 +1,9 @@
-import { ConflictException, HttpException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { UsersModel } from './users.model';
 import { Prisma, User } from '@prisma/client';
 import { CreateUserDto } from './users.types';
 import { hash } from 'bcrypt';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class UsersService {
@@ -11,8 +12,8 @@ export class UsersService {
   async findOne(fields: Prisma.UserWhereUniqueInput): Promise<User | null> {
     try {
       return await this.usersModel.findBy(fields);
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw new RpcException(err);
     }
   }
 
@@ -30,8 +31,7 @@ export class UsersService {
       };
       return await this.usersModel.add(userDataWithHashedPassword);
     } catch (err) {
-      const { message, status } = err;
-      throw new HttpException(message, status);
+      throw new RpcException(err);
     }
   }
 
@@ -39,16 +39,14 @@ export class UsersService {
     try {
       return !!(await this.usersModel.findBy({ email }));
     } catch (err) {
-      const { message, status } = err;
-      throw new HttpException(message, status);
+      throw new RpcException(err);
     }
   }
   async usernameExists(username: string): Promise<boolean> {
     try {
       return !!(await this.usersModel.findBy({ username }));
     } catch (err) {
-      const { message, status } = err;
-      throw new HttpException(message, status);
+      throw new RpcException(err);
     }
   }
 }

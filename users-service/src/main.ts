@@ -1,18 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { UsersModule } from './users.module';
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const app = await NestFactory.create(UsersModule);
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    UsersModule,
+    {
+      transport: Transport.TCP,
+      options: {
+        port: Number(process.env.PORT),
+        host: '127.0.0.1'
+      },
+    },
+  );
   app.useGlobalPipes(new ValidationPipe());
-  const config = new DocumentBuilder()
-    .setTitle('FINM - Users service')
-    .setDescription('The FINM Users service API description.')
-    .setVersion('1.0')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-  await app.listen(Number(process.env.PORT));
+  app.listen(() => console.log('Users-service is listening'));
 }
 bootstrap();

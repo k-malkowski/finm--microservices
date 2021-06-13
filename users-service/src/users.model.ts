@@ -8,6 +8,7 @@ export class UsersModel {
 
   async add(userData: Prisma.UserCreateInput): Promise<User> {
     try {
+      console.log(userData);
       return await this.prisma.user.create({
         data: {
           ...userData,
