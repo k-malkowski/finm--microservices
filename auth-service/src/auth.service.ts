@@ -1,13 +1,19 @@
-import { HttpException, Inject, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import {
   AuthValidateUser,
   CreatedUser,
   CreateUserDto,
   JwtLoginType,
   LoginUserDTO,
-  User,
+  User, UserFields,
 } from './auth.types';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { timeout } from 'rxjs/operators';
 import { DEFAULT_TIMEOUT } from './types';
 import { compareSync } from 'bcrypt';
@@ -41,10 +47,7 @@ export class AuthService {
     username: string,
     pass: string,
   ): Promise<AuthValidateUser | null> {
-    const user: User = await this.client
-      .send({ cmd: 'find-user' }, { username })
-      .pipe(timeout(DEFAULT_TIMEOUT))
-      .toPromise();
+    const user = await this.getUser({ username });
     if (user && compareSync(pass, user.password)) {
       const { password, ...result } = user;
       return result;
@@ -59,5 +62,29 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(payload),
     };
+  }
+
+  async checkJwt(jwt: string): Promise<string | null> {
+    try {
+      const { sub: userUuid } = await this.jwtService.verify(jwt);
+      const user = await this.getUser({ uuid: userUuid });
+      if (!user) throw new UnauthorizedException('Unauthorized.');
+      return userUuid;
+    } catch (err) {
+      throw new RpcException(err);
+    }
+  }
+
+  async getUser(fields: UserFields): Promise<User | null> {
+    try {
+      const user: User = await this.client
+        .send({ cmd: 'find-user' }, fields)
+        .pipe(timeout(DEFAULT_TIMEOUT))
+        .toPromise();
+      if (!user) throw new NotFoundException('User not found.');
+      return user;
+    } catch (err) {
+      throw new RpcException(err);
+    }
   }
 }

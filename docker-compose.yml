@@ -5,8 +5,17 @@ services:
     container_name: 'users_service_db'
     image: postgres:13.1-alpine
     ports:
-      - '${USERS_SERVICE_DB_PORT}:${USERS_SERVICE_DB_PORT}'
+      - '${USERS_SERVICE_DB_PORT}:5432'
     environment:
       - POSTGRES_USER=${USERS_SERVICE_DB_USERNAME}
       - POSTGRES_PASSWORD=${USERS_SERVICE_DB_PASSWORD}
       - POSTGRES_DB=${USERS_SERVICE_DB_NAME}
+  balance_service_db:
+    container_name: 'balance_service_db'
+    image: postgres:13.1-alpine
+    ports:
+      - '${BALANCE_SERVICE_DB_PORT}:5432'
+    environment:
+      - POSTGRES_USER=${BALANCE_SERVICE_DB_USERNAME}
+      - POSTGRES_PASSWORD=${BALANCE_SERVICE_DB_PASSWORD}
+      - POSTGRES_DB=${BALANCE_SERVICE_DB_NAME}

@@ -4,13 +4,16 @@
   "description": "",
   "workspaces": {
     "packages": [
-      "users-service"
+      "users-service",
+      "auth-service",
+      "balance-service"
     ]
   },
   "scripts": {
     "dev": "lerna bootstrap && lerna run dev --parallel",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:db": "docker-compose down && docker-compose up --build"
+    "db:start": "docker-compose down && docker-compose up --build",
+    "db:migrate": "(cd users-service && npm run db:migrate); (cd balance-service && npm run db:migrate);"
   },
   "repository": {
     "type": "git",

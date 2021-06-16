@@ -25,6 +25,18 @@ export type User = {
   updatedAt: Date;
 };
 
+export type UserFields = {
+  uuid?: string;
+  username?: string;
+  email?: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+
 export class LoginUserDTO {
   @ValidateNested({ each: true })
   @Length(4, 24)
