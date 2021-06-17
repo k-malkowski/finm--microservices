@@ -41,4 +41,12 @@ export class BalanceModel {
       data: balanceData,
     });
   }
+
+  async findManyBy(
+    fields: Prisma.BalanceWhereInput,
+  ): Promise<Balance[] | null> {
+    return await this.prisma.balance.findMany({
+      where: fields,
+    });
+  }
 }

@@ -1,4 +1,12 @@
-import { Body, Controller, Param, Post, Put, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Request,
+} from '@nestjs/common';
 import { BalanceService } from './balance.service';
 import { CreateBalanceDTO, UpdateBalanceDTO } from './balance.types';
 import { Request as RequestType } from 'express';
@@ -29,5 +37,18 @@ export class BalanceController {
       req.headers.authorization,
       balanceUuid,
     );
+  }
+
+  @Get('')
+  async findMany(@Request() req: RequestType) {
+    return this.balanceService.findMany(req.headers.authorization);
+  }
+
+  @Get(':balanceUuid')
+  async findOne(
+    @Request() req: RequestType,
+    @Param('balanceUuid') balanceUuid: string,
+  ) {
+    return this.balanceService.findOne(req.headers.authorization, balanceUuid);
   }
 }

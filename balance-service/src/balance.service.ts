@@ -9,6 +9,7 @@ import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { DEFAULT_TIMEOUT } from './types';
 import { timeout } from 'rxjs/operators';
 import { CreateBalanceDTO, UpdateBalanceDTO } from './balance.types';
+import { Balance } from '@prisma/client';
 
 @Injectable()
 export class BalanceService {
@@ -65,6 +66,34 @@ export class BalanceService {
       return {
         message: 'Balance has been updated.',
       };
+    } catch (err) {
+      const { message, status } = err;
+      throw new HttpException(message, status);
+    }
+  }
+
+  async findMany(jwt: string): Promise<Balance[]> {
+    try {
+      const userUuid = await this.getUserUuid(jwt);
+      if (!userUuid) {
+        throw new NotFoundException('User not found.');
+      }
+      return await this.balanceModel.findManyBy({ userUuid });
+    } catch (err) {
+      const { message, status } = err;
+      throw new HttpException(message, status);
+    }
+  }
+
+  async findOne(jwt: string, balanceUuid: string): Promise<Balance> {
+    try {
+      const userUuid = await this.getUserUuid(jwt);
+      if (!userUuid) {
+        throw new NotFoundException('User not found.');
+      }
+      const balance = await this.balanceModel.findBy({ uuid: balanceUuid });
+      if (!balance) throw new NotFoundException('Balance not found');
+      return balance;
     } catch (err) {
       const { message, status } = err;
       throw new HttpException(message, status);
