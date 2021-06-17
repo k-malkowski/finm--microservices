@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './db-client/prisma.service';
 import { Balance, Prisma } from '@prisma/client';
+import { UpdateBalanceDTO } from './balance.types';
 
 type CreateBalance = {
   value: number;
@@ -30,7 +31,7 @@ export class BalanceModel {
   }
 
   async update(
-    balanceData: CreateBalance,
+    balanceData: UpdateBalanceDTO,
     balanceUuid: string,
   ): Promise<Balance> {
     return await this.prisma.balance.update({

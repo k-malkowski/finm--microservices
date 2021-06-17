@@ -11,7 +11,8 @@ import {
   CreateUserDto,
   JwtLoginType,
   LoginUserDTO,
-  User, UserFields,
+  User,
+  UserFields,
 } from './auth.types';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { timeout } from 'rxjs/operators';
