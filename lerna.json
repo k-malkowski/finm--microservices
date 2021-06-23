@@ -2,7 +2,8 @@
   "packages": [
     "users-service",
     "auth-service",
-    "balance-service"
+    "balance-service",
+    "transaction-service"
   ],
   "version": "0.0.0"
 }

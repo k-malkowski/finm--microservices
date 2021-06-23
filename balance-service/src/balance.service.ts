@@ -107,4 +107,17 @@ export class BalanceService {
       throw new RpcException(err);
     }
   }
+
+  async balanceForUserExists(
+    userUuid: string,
+    balanceUuid: string,
+  ): Promise<boolean> {
+    try {
+      const balance = await this.balanceModel.findBy({ uuid: balanceUuid });
+      if (!balance) throw new NotFoundException('Balance not found.');
+      return balance.userUuid === userUuid;
+    } catch (err) {
+      throw new RpcException(err);
+    }
+  }
 }

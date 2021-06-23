@@ -19,3 +19,12 @@ services:
       - POSTGRES_USER=${BALANCE_SERVICE_DB_USERNAME}
       - POSTGRES_PASSWORD=${BALANCE_SERVICE_DB_PASSWORD}
       - POSTGRES_DB=${BALANCE_SERVICE_DB_NAME}
+  transaction_service_db:
+    container_name: 'transaction_service_db'
+    image: postgres:13.1-alpine
+    ports:
+      - '${TRANSACTION_SERVICE_DB_PORT}:5432'
+    environment:
+      - POSTGRES_USER=${TRANSACTION_SERVICE_DB_USERNAME}
+      - POSTGRES_PASSWORD=${TRANSACTION_SERVICE_DB_PASSWORD}
+      - POSTGRES_DB=${TRANSACTION_SERVICE_DB_NAME}

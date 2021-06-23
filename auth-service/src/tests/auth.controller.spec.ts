@@ -1,15 +1,38 @@
 import { AuthService } from '../auth.service';
 import { AuthController } from '../auth.controller';
 import { JwtService } from '@nestjs/jwt';
-import { ClientProxy, ClientProxyFactory } from '@nestjs/microservices';
+import { ClientProxyFactory } from '@nestjs/microservices';
 import { of } from 'rxjs';
+import { ConflictException } from '@nestjs/common';
 
 const date = new Date('01.01.2020');
 
-const user = {
-  uuid: 'test',
-  username: 'user',
-  createdAt: date,
+const createdUserData = (
+  uuid = 'test',
+  username = 'user',
+  createdAt = date,
+) => {
+  return {
+    uuid,
+    username,
+    createdAt,
+  };
+};
+
+const createUserData = (
+  username = 'test',
+  password = 'mocked',
+  email = 'john@doe.com',
+  firstName = 'mocked',
+  lastName = 'mocked',
+) => {
+  return {
+    username,
+    password,
+    email,
+    firstName,
+    lastName,
+  };
 };
 
 describe('AuthController', () => {
@@ -24,15 +47,11 @@ describe('AuthController', () => {
   });
   describe('register', () => {
     it('should register user and return user uuid', async () => {
-      jest.spyOn(clientProxy, 'send').mockImplementation(() => of(user));
-      expect(
-        await authController.register({
-          username: 'test',
-          password: 'mocked',
-          email: 'john@doe.com',
-          firstName: 'mocked',
-          lastName: 'mocked',
-        }),
+      jest
+        .spyOn(clientProxy, 'send')
+        .mockImplementation(() => of(createdUserData()));
+      expect(await authController.register(createUserData())).toStrictEqual(
+        createdUserData(),
       );
     });
   });

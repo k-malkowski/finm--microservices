@@ -10,6 +10,7 @@ import {
 import { BalanceService } from './balance.service';
 import { CreateBalanceDTO, UpdateBalanceDTO } from './balance.types';
 import { Request as RequestType } from 'express';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('api/v1/balance')
 export class BalanceController {
@@ -50,5 +51,16 @@ export class BalanceController {
     @Param('balanceUuid') balanceUuid: string,
   ) {
     return this.balanceService.findOne(req.headers.authorization, balanceUuid);
+  }
+
+  @MessagePattern({ cmd: 'balance-exists' })
+  async balanceForUserUuidExists({
+    userUuid,
+    balanceUuid,
+  }: {
+    userUuid: string;
+    balanceUuid: string;
+  }): Promise<boolean> {
+    return this.balanceService.balanceForUserExists(userUuid, balanceUuid);
   }
 }
