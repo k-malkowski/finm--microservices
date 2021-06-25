@@ -12,9 +12,10 @@ generator client {
 
 model Transaction {
   uuid        String   @id @default(uuid())
-  forDate     DateTime
+  boughtAt     DateTime
   amount     Int
   name        String
+  isDeleted    Boolean       @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   balanceUuid String

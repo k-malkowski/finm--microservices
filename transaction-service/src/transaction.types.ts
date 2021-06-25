@@ -1,19 +1,26 @@
-import { Length, IsPositive, IsNumber, IsDateString, IsUUID, IsOptional } from 'class-validator';
+import {
+  Length,
+  IsPositive,
+  IsInt,
+  IsDateString,
+  IsUUID,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateTransactionDTO {
   @Length(2, 55)
   name!: string;
 
-  @IsNumber()
+  @IsInt()
   amount!: number;
 
   @IsDateString()
-  forDate!: Date;
+  boughtAt!: Date;
 
   @IsUUID('4')
   balanceUuid!: string;
 
-  @IsNumber()
+  @IsInt()
   @IsPositive()
   categoryId!: number;
 }
@@ -23,15 +30,15 @@ export class UpdateTransactionDTO {
   @Length(2, 55)
   name?: string;
 
-  @IsNumber()
+  @IsInt()
   @IsOptional()
   amount?: number;
 
   @IsDateString()
   @IsOptional()
-  forDate?: Date;
+  boughtAt?: Date;
 
-  @IsNumber()
+  @IsInt()
   @IsOptional()
   @IsPositive()
   categoryId?: number;

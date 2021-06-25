@@ -15,6 +15,7 @@ model Balance {
   value        Int
   name         String
   currency     String
+  isDeleted    Boolean       @default(false)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   userUuid     String

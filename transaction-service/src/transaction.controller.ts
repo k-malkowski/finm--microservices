@@ -1,12 +1,19 @@
 import {
   Body,
-  Controller, Param,
-  Post, Put,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
   Request,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
-import { CreateTransactionDTO, UpdateTransactionDTO } from './transaction.types';
+import {
+  CreateTransactionDTO,
+  UpdateTransactionDTO,
+} from './transaction.types';
 import { Request as RequestType } from 'express';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('api/v1/transaction')
 export class TransactionController {
@@ -17,7 +24,7 @@ export class TransactionController {
     @Body() transactionData: CreateTransactionDTO,
     @Request() req: RequestType,
   ) {
-    return this.transactionService.createTransaction(
+    return await this.transactionService.createTransaction(
       transactionData,
       req.headers.authorization,
     );
@@ -27,13 +34,24 @@ export class TransactionController {
   async update(
     @Body() transactionData: UpdateTransactionDTO,
     @Request() req: RequestType,
-    @Param() params: { transactionUuid: string, balanceUuid: string }
+    @Param() params: { transactionUuid: string; balanceUuid: string },
   ) {
-    return this.transactionService.updateTransaction(
+    return await this.transactionService.updateTransaction(
       transactionData,
       req.headers.authorization,
       params.transactionUuid,
-      params.balanceUuid
+      params.balanceUuid,
+    );
+  }
+
+  @Get(':balanceUuid')
+  async findMany(
+    @Request() req: RequestType,
+    @Param() params: { balanceUuid: string },
+  ) {
+    return await this.transactionService.findMany(
+      req.headers.authorization,
+      params.balanceUuid,
     );
   }
 }

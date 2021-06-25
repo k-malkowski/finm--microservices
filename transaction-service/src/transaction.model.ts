@@ -3,23 +3,44 @@ import { PrismaService } from './db-client/prisma.service';
 import { Transaction, Prisma } from '@prisma/client';
 import { CreateTransactionDTO } from './transaction.types';
 
-
 @Injectable()
 export class TransactionModel {
   constructor(private prisma: PrismaService) {}
 
   async add(transactionData: CreateTransactionDTO): Promise<Transaction> {
-    return await this.prisma.transaction.create({
-      data: transactionData
-    });
+    try {
+      return await this.prisma.transaction.create({
+        data: transactionData,
+      });
+    } catch (e) {
+      throw e;
+    }
   }
 
-  async update(fields: Prisma.TransactionUpdateInput, transactionUuid: string): Promise<Transaction> {
-    return await this.prisma.transaction.update({
-      where: {
-        uuid: transactionUuid
-      },
-      data: fields
-    })
+  async update(
+    fields: Prisma.TransactionUpdateInput,
+    transactionUuid: string,
+  ): Promise<Transaction> {
+    try {
+      return await this.prisma.transaction.update({
+        where: {
+          uuid: transactionUuid,
+        },
+        data: fields,
+      });
+    } catch (e) {
+      throw e;
+    }
   }
+
+  async findMany(fields: Prisma.TransactionWhereInput): Promise<Transaction[]> {
+    try {
+      return await this.prisma.transaction.findMany({
+        where: fields,
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
+
 }
