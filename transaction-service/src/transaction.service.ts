@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   HttpException,
   Inject,
   Injectable,
@@ -58,7 +59,7 @@ export class TransactionService {
       ) {
         throw new NotFoundException("Balance for that user uuid doesn't exist");
       }
-      return await this.transactionModel.add(transactionData);
+      return await this.transactionModel.add({ ...transactionData, userUuid });
     } catch ({ message, status }) {
       throw new HttpException(message, status);
     }
@@ -88,6 +89,34 @@ export class TransactionService {
         throw new NotFoundException('Balance for that user uuid doesnt exist');
       }
       return this.transactionModel.findMany({ balanceUuid });
+    } catch ({ message, status }) {
+      throw new HttpException(message, status);
+    }
+  }
+
+  async deleteTransaction(
+    jwt: string,
+    transactionUuid: string,
+  ): Promise<{ updatedAt: Date }> {
+    try {
+      const userUuid = await this.getUserUuid(jwt);
+      const transaction = await this.transactionModel.findOne({
+        uuid: transactionUuid,
+      });
+      if (transaction.userUuid !== userUuid) {
+        throw new ConflictException(
+          'The transaction does not have provided user uuid',
+        );
+      }
+      const { updatedAt } = await this.transactionModel.update(
+        {
+          isDeleted: true,
+        },
+        transactionUuid,
+      );
+      return {
+        updatedAt,
+      };
     } catch ({ message, status }) {
       throw new HttpException(message, status);
     }

@@ -19,5 +19,6 @@ model Transaction {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   balanceUuid String
+  userUuid  String
   categoryId  Int
 }

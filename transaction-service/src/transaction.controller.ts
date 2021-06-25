@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   Param,
   Post,
@@ -13,7 +13,6 @@ import {
   UpdateTransactionDTO,
 } from './transaction.types';
 import { Request as RequestType } from 'express';
-import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('api/v1/transaction')
 export class TransactionController {
@@ -52,6 +51,17 @@ export class TransactionController {
     return await this.transactionService.findMany(
       req.headers.authorization,
       params.balanceUuid,
+    );
+  }
+
+  @Delete(':transactionUuid')
+  async delete(
+    @Request() req: RequestType,
+    @Param() params: { transactionUuid: string },
+  ) {
+    return await this.transactionService.deleteTransaction(
+      req.headers.authorization,
+      params.transactionUuid,
     );
   }
 }

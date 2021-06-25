@@ -7,7 +7,9 @@ import { CreateTransactionDTO } from './transaction.types';
 export class TransactionModel {
   constructor(private prisma: PrismaService) {}
 
-  async add(transactionData: CreateTransactionDTO): Promise<Transaction> {
+  async add(
+    transactionData: CreateTransactionDTO & { userUuid: string },
+  ): Promise<Transaction> {
     try {
       return await this.prisma.transaction.create({
         data: transactionData,
@@ -43,4 +45,15 @@ export class TransactionModel {
     }
   }
 
+  async findOne(
+    fields: Prisma.TransactionWhereUniqueInput,
+  ): Promise<Transaction> {
+    try {
+      return await this.prisma.transaction.findUnique({
+        where: fields,
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
 }
