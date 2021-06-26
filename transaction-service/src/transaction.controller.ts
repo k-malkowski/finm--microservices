@@ -56,7 +56,7 @@ export class TransactionController {
       req.headers.authorization,
       params.balanceUuid,
       query.dateFrom,
-      query.dateTo
+      query.dateTo,
     );
   }
 

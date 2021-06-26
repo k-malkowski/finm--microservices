@@ -32,19 +32,14 @@ export class BalanceService {
   async createBalance(
     balanceData: CreateBalanceDTO,
     jwt: string,
-  ): Promise<{ createdAt: Date; message: string }> {
+  ): Promise<Balance> {
     try {
       const userUuid = await this.getUserUuid(jwt);
       if (!userUuid) {
         throw new NotFoundException('User not found.');
       }
-      const { createdAt } = await this.balanceModel.add(balanceData, userUuid);
-      return {
-        createdAt,
-        message: 'Balance has been created.',
-      };
-    } catch (err) {
-      const { message, status } = err;
+      return await this.balanceModel.add(balanceData, userUuid);
+    } catch ({ message, status }) {
       throw new HttpException(message, status);
     }
   }
@@ -66,8 +61,7 @@ export class BalanceService {
       return {
         message: 'Balance has been updated.',
       };
-    } catch (err) {
-      const { message, status } = err;
+    } catch ({ message, status }) {
       throw new HttpException(message, status);
     }
   }
@@ -78,9 +72,8 @@ export class BalanceService {
       if (!userUuid) {
         throw new NotFoundException('User not found.');
       }
-      return await this.balanceModel.findManyBy({ userUuid });
-    } catch (err) {
-      const { message, status } = err;
+      return await this.balanceModel.findManyBy({ userUuid, isDeleted: false });
+    } catch ({ message, status }) {
       throw new HttpException(message, status);
     }
   }
@@ -91,11 +84,12 @@ export class BalanceService {
       if (!userUuid) {
         throw new NotFoundException('User not found.');
       }
-      const balance = await this.balanceModel.findBy({ uuid: balanceUuid });
+      const balance = await this.balanceModel.findBy({
+        uuid: balanceUuid,
+      });
       if (!balance) throw new NotFoundException('Balance not found');
       return balance;
-    } catch (err) {
-      const { message, status } = err;
+    } catch ({ message, status }) {
       throw new HttpException(message, status);
     }
   }
@@ -115,9 +109,32 @@ export class BalanceService {
     try {
       const balance = await this.balanceModel.findBy({ uuid: balanceUuid });
       if (!balance) throw new NotFoundException('Balance not found.');
-      return balance.userUuid === userUuid;
+      return balance.userUuid === userUuid && !balance.isDeleted;
     } catch (err) {
       throw new RpcException(err);
+    }
+  }
+
+  async deleteBalance(
+    jwt: string,
+    balanceUuid: string,
+  ): Promise<{ updatedAt: Date }> {
+    try {
+      const userUuid = await this.getUserUuid(jwt);
+      if (!(await this.balanceForUserExists(userUuid, balanceUuid))) {
+        throw new NotFoundException(
+          'The balance does not have provided user uuid.',
+        );
+      }
+      const { updatedAt } = await this.balanceModel.update(
+        { isDeleted: true },
+        balanceUuid,
+      );
+      return {
+        updatedAt,
+      };
+    } catch ({ status, message }) {
+      throw new HttpException(message, status);
     }
   }
 }

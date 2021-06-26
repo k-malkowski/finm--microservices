@@ -31,7 +31,7 @@ export class BalanceModel {
   }
 
   async update(
-    balanceData: UpdateBalanceDTO,
+    balanceData: Prisma.BalanceUpdateInput,
     balanceUuid: string,
   ): Promise<Balance> {
     return await this.prisma.balance.update({

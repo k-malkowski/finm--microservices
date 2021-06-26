@@ -96,6 +96,7 @@ export class TransactionService {
       return this.transactionModel.findMany({
         balanceUuid,
         transactionMadeAt: { gte: new Date(dateFrom), lt: new Date(dateTo) },
+        isDeleted: false,
       });
     } catch ({ message, status }) {
       throw new HttpException(message, status);
@@ -112,7 +113,7 @@ export class TransactionService {
         uuid: transactionUuid,
       });
       if (transaction.userUuid !== userUuid) {
-        throw new ConflictException(
+        throw new NotFoundException(
           'The transaction does not have provided user uuid',
         );
       }

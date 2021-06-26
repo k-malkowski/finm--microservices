@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   Param,
   Post,
@@ -62,5 +62,16 @@ export class BalanceController {
     balanceUuid: string;
   }): Promise<boolean> {
     return this.balanceService.balanceForUserExists(userUuid, balanceUuid);
+  }
+
+  @Delete(':balanceUuid')
+  async delete(
+    @Request() req: RequestType,
+    @Param() params: { balanceUuid: string },
+  ) {
+    return await this.balanceService.deleteBalance(
+      req.headers.authorization,
+      params.balanceUuid,
+    );
   }
 }
