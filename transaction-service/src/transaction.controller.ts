@@ -1,15 +1,18 @@
 import {
   Body,
-  Controller, Delete,
+  Controller,
+  Delete,
   Get,
   Param,
   Post,
   Put,
+  Query,
   Request,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import {
   CreateTransactionDTO,
+  FindManyQueryDTO,
   UpdateTransactionDTO,
 } from './transaction.types';
 import { Request as RequestType } from 'express';
@@ -47,10 +50,13 @@ export class TransactionController {
   async findMany(
     @Request() req: RequestType,
     @Param() params: { balanceUuid: string },
+    @Query() query: FindManyQueryDTO,
   ) {
     return await this.transactionService.findMany(
       req.headers.authorization,
       params.balanceUuid,
+      query.dateFrom,
+      query.dateTo
     );
   }
 

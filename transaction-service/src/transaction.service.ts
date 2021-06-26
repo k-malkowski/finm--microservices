@@ -82,13 +82,21 @@ export class TransactionService {
     }
   }
 
-  async findMany(jwt: string, balanceUuid: string): Promise<Transaction[]> {
+  async findMany(
+    jwt: string,
+    balanceUuid: string,
+    dateFrom: Date,
+    dateTo: Date,
+  ): Promise<Transaction[]> {
     try {
       const userUuid = await this.getUserUuid(jwt);
       if (!(await this.balanceForUserExists(userUuid, balanceUuid))) {
         throw new NotFoundException('Balance for that user uuid doesnt exist');
       }
-      return this.transactionModel.findMany({ balanceUuid });
+      return this.transactionModel.findMany({
+        balanceUuid,
+        transactionMadeAt: { gte: new Date(dateFrom), lt: new Date(dateTo) },
+      });
     } catch ({ message, status }) {
       throw new HttpException(message, status);
     }

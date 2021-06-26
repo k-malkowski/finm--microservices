@@ -15,7 +15,7 @@ export class CreateTransactionDTO {
   amount!: number;
 
   @IsDateString()
-  boughtAt!: Date;
+  transactionMadeAt!: Date;
 
   @IsUUID('4')
   balanceUuid!: string;
@@ -36,10 +36,20 @@ export class UpdateTransactionDTO {
 
   @IsDateString()
   @IsOptional()
-  boughtAt?: Date;
+  transactionMadeAt?: Date;
 
   @IsInt()
   @IsOptional()
   @IsPositive()
   categoryId?: number;
+}
+
+export class FindManyQueryDTO {
+  @IsDateString()
+  @IsOptional()
+  dateFrom?: Date;
+
+  @IsDateString()
+  @IsOptional()
+  dateTo?: Date;
 }
