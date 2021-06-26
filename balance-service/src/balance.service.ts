@@ -15,13 +15,25 @@ import { Balance } from '@prisma/client';
 export class BalanceService {
   constructor(
     private readonly balanceModel: BalanceModel,
-    @Inject('AUTH_SERVICE') private client: ClientProxy,
+    @Inject('AUTH_SERVICE') private authClient: ClientProxy,
+    @Inject('TRANSACTION_SERVICE') private transactionClient: ClientProxy,
   ) {}
 
   async getUserUuid(jwt: string): Promise<string> {
     try {
-      return await this.client
+      return await this.authClient
         .send({ cmd: 'check-jwt' }, jwt)
+        .pipe(timeout(DEFAULT_TIMEOUT))
+        .toPromise();
+    } catch (err) {
+      throw new RpcException(err);
+    }
+  }
+
+  async getSumOfTransactions(balanceUuid: string): Promise<number> {
+    try {
+      return this.transactionClient
+        .send({ cmd: 'sum-of-transactions' }, balanceUuid)
         .pipe(timeout(DEFAULT_TIMEOUT))
         .toPromise();
     } catch (err) {
@@ -38,7 +50,7 @@ export class BalanceService {
       if (!userUuid) {
         throw new NotFoundException('User not found.');
       }
-      return await this.balanceModel.add(balanceData, userUuid);
+      return await this.balanceModel.add({ ...balanceData, userUuid });
     } catch ({ message, status }) {
       throw new HttpException(message, status);
     }
@@ -78,7 +90,10 @@ export class BalanceService {
     }
   }
 
-  async findOne(jwt: string, balanceUuid: string): Promise<Balance> {
+  async findOne(
+    jwt: string,
+    balanceUuid: string,
+  ): Promise<Balance & { sumOfTransactions: number }> {
     try {
       const userUuid = await this.getUserUuid(jwt);
       if (!userUuid) {
@@ -88,7 +103,11 @@ export class BalanceService {
         uuid: balanceUuid,
       });
       if (!balance) throw new NotFoundException('Balance not found');
-      return balance;
+      const sumOfTransactions = await this.getSumOfTransactions(balanceUuid);
+      return {
+        ...balance,
+        sumOfTransactions,
+      };
     } catch ({ message, status }) {
       throw new HttpException(message, status);
     }

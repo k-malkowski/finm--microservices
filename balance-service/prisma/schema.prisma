@@ -12,7 +12,6 @@ generator client {
 
 model Balance {
   uuid         String        @id @default(uuid())
-  value        Int
   name         String
   currency     String
   isDeleted    Boolean       @default(false)

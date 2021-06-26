@@ -16,6 +16,14 @@ import { BalanceModel } from './balance.model';
           host: '127.0.0.1',
         },
       },
+      {
+        name: 'TRANSACTION_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          port: 3023,
+          host: '127.0.0.1',
+        },
+      },
     ]),
   ],
   controllers: [BalanceController],

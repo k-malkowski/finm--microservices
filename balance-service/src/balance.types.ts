@@ -1,4 +1,4 @@
-import { Length, IsPositive, IsOptional } from 'class-validator';
+import { Length, IsOptional } from 'class-validator';
 
 export class CreateBalanceDTO {
   @Length(2, 35)
@@ -6,9 +6,6 @@ export class CreateBalanceDTO {
 
   @Length(2, 5)
   currency!: string;
-
-  @IsPositive()
-  value!: number;
 }
 
 export class UpdateBalanceDTO {
@@ -19,9 +16,5 @@ export class UpdateBalanceDTO {
   @IsOptional()
   @Length(2, 5)
   currency?: string;
-
-  @IsOptional()
-  @IsPositive()
-  value?: number;
 }
 

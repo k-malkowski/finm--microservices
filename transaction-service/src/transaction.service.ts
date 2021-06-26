@@ -130,4 +130,20 @@ export class TransactionService {
       throw new HttpException(message, status);
     }
   }
+
+  async getSumOfTransactions(balanceUuid): Promise<number> {
+    try {
+      const transactions = await this.transactionModel.findMany({
+        balanceUuid,
+        isDeleted: false,
+      });
+      const sumOfTransactions = transactions.reduce(
+        (prev, { amount }) => prev + amount,
+        0,
+      );
+      return sumOfTransactions;
+    } catch (err) {
+      throw new RpcException(err);
+    }
+  }
 }

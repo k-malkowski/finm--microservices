@@ -16,6 +16,7 @@ import {
   UpdateTransactionDTO,
 } from './transaction.types';
 import { Request as RequestType } from 'express';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('api/v1/transaction')
 export class TransactionController {
@@ -58,6 +59,11 @@ export class TransactionController {
       query.dateFrom,
       query.dateTo,
     );
+  }
+
+  @MessagePattern({ cmd: 'sum-of-transactions' })
+  async getSumOfTransactions(balanceUuid: string) {
+    return await this.transactionService.getSumOfTransactions(balanceUuid);
   }
 
   @Delete(':transactionUuid')
