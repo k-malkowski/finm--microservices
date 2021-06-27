@@ -18,6 +18,7 @@ export class TransactionService {
     private readonly transactionModel: TransactionModel,
     @Inject('AUTH_SERVICE') private authClient: ClientProxy,
     @Inject('BALANCE_SERVICE') private balanceClient: ClientProxy,
+    @Inject('CATEGORY_SERVICE') private categoryClient: ClientProxy,
   ) {}
 
   async getUserUuid(jwt: string): Promise<string> {
@@ -45,6 +46,20 @@ export class TransactionService {
     }
   }
 
+  async categoryForUserExists(
+    userUuid: string,
+    categoryId: number,
+  ): Promise<boolean> {
+    try {
+      return await this.categoryClient
+        .send({ cmd: 'category-for-user-exists' }, { userUuid, categoryId })
+        .pipe(timeout(DEFAULT_TIMEOUT))
+        .toPromise();
+    } catch (err) {
+      throw new RpcException(err);
+    }
+  }
+
   async createTransaction(
     transactionData: CreateTransactionDTO,
     jwt: string,
@@ -58,6 +73,16 @@ export class TransactionService {
         ))
       ) {
         throw new NotFoundException("Balance for that user uuid doesn't exist");
+      }
+      if (
+        !(await this.categoryForUserExists(
+          userUuid,
+          Number(transactionData.categoryId),
+        ))
+      ) {
+        throw new NotFoundException(
+          "Category for that user uuid doesn't exist",
+        );
       }
       return await this.transactionModel.add({ ...transactionData, userUuid });
     } catch ({ message, status }) {
@@ -75,6 +100,18 @@ export class TransactionService {
       const userUuid = await this.getUserUuid(jwt);
       if (!(await this.balanceForUserExists(userUuid, balanceUuid))) {
         throw new NotFoundException("Balance for that user uuid doesn't exist");
+      }
+      if (fields.categoryId) {
+        if (
+          !(await this.categoryForUserExists(
+            userUuid,
+            Number(fields.categoryId),
+          ))
+        ) {
+          throw new NotFoundException(
+            "Category for that user uuid doesn't exist",
+          );
+        }
       }
       return await this.transactionModel.update(fields, transactionUuid);
     } catch ({ message, status }) {

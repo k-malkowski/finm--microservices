@@ -57,4 +57,18 @@ export class CategoryController {
       params.categoryId,
     );
   }
+
+  @MessagePattern({ cmd: 'category-for-user-exists' })
+  async categoryForUserExists({
+    userUuid,
+    categoryId,
+  }: {
+    userUuid: string;
+    categoryId: number;
+  }) {
+    return await this.categoryService.categoryForUserExists(
+      categoryId,
+      userUuid,
+    );
+  }
 }

@@ -18,14 +18,14 @@ const fakeReq: any = {
 const createTransactionData = (
   name = 'testname',
   amount = -300,
-  boughtAt = fakeDate,
+  transactionMadeAt = fakeDate,
   balanceUuid = 'fakeUuid',
   categoryId = 3,
 ) => {
   return {
     name,
     amount,
-    boughtAt,
+    transactionMadeAt,
     balanceUuid,
     categoryId,
   };
@@ -34,7 +34,7 @@ const createTransactionData = (
 const createdTransactionData = (
   name = 'testname',
   amount = -300,
-  boughtAt = fakeDate,
+  transactionMadeAt = fakeDate,
   balanceUuid = 'fakeUuid',
   categoryId = 3,
   createdAt = fakeDate,
@@ -46,7 +46,7 @@ const createdTransactionData = (
   return {
     name,
     amount,
-    boughtAt,
+    transactionMadeAt,
     balanceUuid,
     categoryId,
     createdAt,
@@ -60,6 +60,7 @@ const createdTransactionData = (
 describe('TransactionController', () => {
   let authClientProxy: ClientProxyFactory;
   let balanceClientProxy: ClientProxyFactory;
+  let categoryClientProxy: ClientProxyFactory;
   let prismaService: PrismaService;
   let transactionService: TransactionService;
   let transactionModel: TransactionModel;
@@ -74,6 +75,7 @@ describe('TransactionController', () => {
       transactionModel,
       authClientProxy as ClientProxy,
       balanceClientProxy as ClientProxy,
+      categoryClientProxy as ClientProxy,
     );
     transactionController = new TransactionController(transactionService);
   });
@@ -85,6 +87,9 @@ describe('TransactionController', () => {
         .mockImplementation(async () => 'mocked2');
       jest
         .spyOn(transactionService, 'balanceForUserExists')
+        .mockImplementation(async () => true);
+      jest
+        .spyOn(transactionService, 'categoryForUserExists')
         .mockImplementation(async () => true);
       jest
         .spyOn(transactionModel, 'add')
@@ -129,6 +134,9 @@ describe('TransactionController', () => {
         .mockImplementation(async () => 'mocked2');
       jest
         .spyOn(transactionService, 'balanceForUserExists')
+        .mockImplementation(async () => true);
+      jest
+        .spyOn(transactionService, 'categoryForUserExists')
         .mockImplementation(async () => true);
       jest
         .spyOn(transactionModel, 'update')
@@ -187,12 +195,19 @@ describe('TransactionController', () => {
         .spyOn(transactionService, 'balanceForUserExists')
         .mockImplementation(async () => true);
       jest
+        .spyOn(transactionService, 'categoryForUserExists')
+        .mockImplementation(async () => true);
+      jest
         .spyOn(transactionModel, 'findMany')
         .mockImplementation(async () => [createdTransaction]);
       expect(
-        await transactionController.findMany(fakeReq, {
-          balanceUuid: 'fakeUuid',
-        }),
+        await transactionController.findMany(
+          fakeReq,
+          {
+            balanceUuid: 'fakeUuid',
+          },
+          { dateFrom: new Date('2021-06-26'), dateTo: new Date('2021-06-26') },
+        ),
       ).toStrictEqual([createdTransaction]);
     });
     it('should not return list of transactions when user not found', async () => {
@@ -200,9 +215,13 @@ describe('TransactionController', () => {
         .spyOn(transactionService, 'getUserUuid')
         .mockRejectedValue(async () => new RpcException('User not found.'));
       try {
-        await transactionController.findMany(fakeReq, {
-          balanceUuid: 'fakeUuid',
-        });
+        await transactionController.findMany(
+          fakeReq,
+          {
+            balanceUuid: 'fakeUuid',
+          },
+          { dateFrom: new Date('2021-06-26'), dateTo: new Date('2021-06-26') },
+        );
         expect(true).toBe(false);
       } catch (err) {
         expect(err).toBeInstanceOf(HttpException);
@@ -218,9 +237,13 @@ describe('TransactionController', () => {
           async () => new RpcException('Balance for user does not exist'),
         );
       try {
-        await transactionController.findMany(fakeReq, {
-          balanceUuid: 'fakeUuid',
-        });
+        await transactionController.findMany(
+          fakeReq,
+          {
+            balanceUuid: 'fakeUuid',
+          },
+          { dateFrom: new Date('2021-06-26'), dateTo: new Date('2021-06-26') },
+        );
         expect(true).toBe(false);
       } catch (err) {
         expect(err).toBeInstanceOf(HttpException);
@@ -238,13 +261,19 @@ describe('TransactionController', () => {
         .spyOn(transactionService, 'balanceForUserExists')
         .mockImplementation(async () => true);
       jest
+        .spyOn(transactionService, 'categoryForUserExists')
+        .mockImplementation(async () => true);
+      jest
+        .spyOn(transactionModel, 'findOne')
+        .mockImplementation(async () => createdTransaction);
+      jest
         .spyOn(transactionModel, 'update')
         .mockImplementation(async () => createdTransaction);
       expect(
         await transactionController.delete(fakeReq, {
           transactionUuid: 'mocked',
         }),
-      ).toStrictEqual(createdTransaction);
+      ).toStrictEqual({ updatedAt: fakeDate });
     });
   });
 });

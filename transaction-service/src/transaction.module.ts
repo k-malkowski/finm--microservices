@@ -24,6 +24,14 @@ import { TransactionModel } from './transaction.model';
           host: '127.0.0.1',
         },
       },
+      {
+        name: 'CATEGORY_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          port: 3024,
+          host: '127.0.0.1',
+        },
+      },
     ]),
   ],
   controllers: [TransactionController],

@@ -6,9 +6,7 @@ import { Category, Prisma } from '@prisma/client';
 export class CategoryModel {
   constructor(private prisma: PrismaService) {}
 
-  async add(
-    categoryData: Prisma.CategoryCreateInput,
-  ): Promise<Category> {
+  async add(categoryData: Prisma.CategoryCreateInput): Promise<Category> {
     try {
       return await this.prisma.category.create({
         data: categoryData,
@@ -44,9 +42,7 @@ export class CategoryModel {
     }
   }
 
-  async findOne(
-    fields: Prisma.CategoryWhereUniqueInput,
-  ): Promise<Category> {
+  async findOne(fields: Prisma.CategoryWhereUniqueInput): Promise<Category> {
     try {
       return await this.prisma.category.findUnique({
         where: fields,
