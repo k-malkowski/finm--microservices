@@ -3,7 +3,8 @@
     "users-service",
     "auth-service",
     "balance-service",
-    "transaction-service"
+    "transaction-service",
+    "category-service"
   ],
   "version": "0.0.0"
 }

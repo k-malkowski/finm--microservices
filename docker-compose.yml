@@ -28,3 +28,12 @@ services:
       - POSTGRES_USER=${TRANSACTION_SERVICE_DB_USERNAME}
       - POSTGRES_PASSWORD=${TRANSACTION_SERVICE_DB_PASSWORD}
       - POSTGRES_DB=${TRANSACTION_SERVICE_DB_NAME}
+  category_service_db:
+    container_name: 'category_service_db'
+    image: postgres:13.1-alpine
+    ports:
+      - '${CATEGORY_SERVICE_DB_PORT}:5432'
+    environment:
+      - POSTGRES_USER=${CATEGORY_SERVICE_DB_USERNAME}
+      - POSTGRES_PASSWORD=${CATEGORY_SERVICE_DB_PASSWORD}
+      - POSTGRES_DB=${CATEGORY_SERVICE_DB_NAME}

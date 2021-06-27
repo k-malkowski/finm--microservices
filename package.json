@@ -7,14 +7,15 @@
       "users-service",
       "auth-service",
       "balance-service",
-      "transaction-service"
+      "transaction-service",
+      "category-service"
     ]
   },
   "scripts": {
     "dev": "lerna bootstrap && lerna run dev --parallel",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:start": "docker-compose down && docker-compose up --build",
-    "db:migrate": "(cd users-service && npm run db:migrate); (cd balance-service && npm run db:migrate); (cd transaction-service && npm run db:migrate);"
+    "db:migrate": "(cd users-service && npm run db:migrate); (cd balance-service && npm run db:migrate); (cd transaction-service && npm run db:migrate); (cd category-service && npm run db:migrate);"
   },
   "repository": {
     "type": "git",

@@ -137,11 +137,7 @@ export class TransactionService {
         balanceUuid,
         isDeleted: false,
       });
-      const sumOfTransactions = transactions.reduce(
-        (prev, { amount }) => prev + amount,
-        0,
-      );
-      return sumOfTransactions;
+      return transactions.reduce((prev, { amount }) => prev + amount, 0);
     } catch (err) {
       throw new RpcException(err);
     }
